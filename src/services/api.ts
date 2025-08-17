@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://backenvillagolbackend.fly.dev/api'
+    baseURL: 'https://backenvillagolbackend.fly.dev/api',
     headers: {
         'Content-Type': 'application/json',
     },
