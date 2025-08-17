@@ -6,21 +6,17 @@ import {
     Card, 
     CardContent, 
     Button,
-    useTheme,
     alpha
-} from '@mui/material';
-import { 
+} from '@mui/material';import { 
     SportsTennis, 
     Schedule, 
     People, 
     TrendingUp,
-    Star,
-    CheckCircle
+    Star
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
-    const theme = useTheme();
     const navigate = useNavigate();
 
     const features = [
@@ -158,7 +154,7 @@ const HomePage = () => {
                     </Typography>
                     
                     <Grid container spacing={4}>
-                        {features.map((feature, index) => (
+                        {features.map((feature) => (
                             <Grid>
                                 <Card sx={{ 
                                     p: 4,

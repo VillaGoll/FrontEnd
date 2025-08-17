@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { CssBaseline, Box } from '@mui/material';
+import { CssBaseline } from '@mui/material';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import CourtPage from './pages/CourtPage';

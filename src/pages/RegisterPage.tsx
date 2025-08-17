@@ -18,7 +18,7 @@ const RegisterPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const { dispatch } = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,7 +29,7 @@ const RegisterPage = () => {
         }
         try {
             const response = await authService.register({ name, email, password });
-            dispatch({ type: 'LOGIN', payload: response.data });
+            login(response.data);
             navigate('/');
         } catch (error) {
             console.error(error);

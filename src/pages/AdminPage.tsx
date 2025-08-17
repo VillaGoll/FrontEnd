@@ -40,7 +40,7 @@ const AdminPage = () => {
         setRefresh(prev => !prev);
     };
 
-    const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
+    const handleChangeTab = (_event: React.SyntheticEvent, newValue: number) => {
         setTab(newValue);
     };
 

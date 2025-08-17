@@ -128,7 +128,6 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
         hours.forEach(hour => {
             const row = [hour];
             week.forEach(day => {
-                const dayKey = day.toLocaleDateString('en-CA', { timeZone: 'America/Guatemala' });
                 const booking = getBookingForSlot(day, hour);
                 let cellValue = '';
                 if (booking) {
