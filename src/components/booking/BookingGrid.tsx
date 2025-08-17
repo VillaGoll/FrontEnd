@@ -212,7 +212,11 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
         XLSX.writeFile(wb, filename);
     }, [bookings, courtId, court, week, hours]);
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ backgroundColor: court?.color ? `${court.color}25` : 'transparent' }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+                {court?.name}
+            </Typography>
+            
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
                 <IconButton onClick={handlePreviousWeek}>
                     <ArrowBackIosNewIcon />
@@ -241,26 +245,54 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
             </Box>
             <Table 
                 sx={{ 
-                    minWidth: 650,
+                    minWidth: { xs: 800, sm: 900 },
                     width: '100%',
                     tableLayout: 'fixed',
+                    backgroundColor: court?.color ? `${court.color}25` : 'transparent', // Aplicar color de la cancha con 25% de opacidad
                     '& th, & td': {
-                        padding: isMobile ? '8px 4px' : '16px 8px',
-                        fontSize: isMobile ? '0.75rem' : '0.875rem',
+                        padding: isMobile ? '6px 2px' : '16px 8px',
+                        fontSize: isMobile ? '0.7rem' : '0.875rem',
+                        borderBottom: '1px solid rgba(224, 224, 224, 0.5)',
+                        overflow: 'visible'
+                    },
+                    '& th': {
+                        fontWeight: 'bold',
+                        backgroundColor: 'rgba(0, 0, 0, 0.04)'
                     }
                 }} 
                 aria-label="booking table"
             >
                 <TableHead>
                     <TableRow>
-                        <TableCell>Hora</TableCell>
-                        {week.map(day => <TableCell key={day.toString()}>{format(day, 'eeee d', { locale: es })}</TableCell>)}
+                        <TableCell sx={{ width: { xs: '40px', sm: '60px' } }}>Hora</TableCell>
+                        {week.map(day => (
+                            <TableCell 
+                                key={day.toString()}
+                                sx={{ 
+                                    wordBreak: 'break-word',
+                                    whiteSpace: { xs: 'normal', sm: 'nowrap' }
+                                }}
+                            >
+                                {isMobile 
+                                    ? format(day, 'EEE d', { locale: es }) 
+                                    : format(day, 'eeee d', { locale: es })
+                                }
+                            </TableCell>
+                        ))}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {hours.map((hour) => (
                         <TableRow key={hour}>
-                            <TableCell component="th" scope="row">
+                            <TableCell 
+                                component="th" 
+                                scope="row"
+                                sx={{ 
+                                    width: { xs: '40px', sm: '60px' },
+                                    fontWeight: 'medium',
+                                    fontSize: { xs: '0.65rem', sm: '0.75rem' }
+                                }}
+                            >
                                 {hour}
                             </TableCell>
                             {week.map(day => {
@@ -287,6 +319,7 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                                         timeSlot={hour} 
                                         onBookingUpdate={fetchBookings} 
                                         isPast={isPast}
+                                        courtColor={court?.color}
                                     />
                                 );
                             })}

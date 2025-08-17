@@ -5,6 +5,7 @@ import UserList from '../components/admin/UserList';
 import UserForm from '../components/admin/UserForm';
 import ClientList from '../components/admin/ClientList';
 import ClientForm from '../components/admin/ClientForm';
+import LogPage from './LogPage';
 import { useState } from 'react';
 import { Tab, Tabs, Fade } from '@mui/material';
 
@@ -50,10 +51,17 @@ const AdminPage = () => {
                 Admin Panel
             </Typography>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={tab} onChange={handleChangeTab} aria-label="admin tabs">
+                <Tabs 
+                    value={tab} 
+                    onChange={handleChangeTab} 
+                    aria-label="admin tabs"
+                    variant="scrollable"
+                    scrollButtons="auto"
+                >
                     <Tab label="Canchas" />
                     <Tab label="Usuarios" />
                     <Tab label="Clientes" />
+                    <Tab label="Logs" />
                 </Tabs>
             </Box>
 
@@ -87,6 +95,12 @@ const AdminPage = () => {
                     <Box sx={{ flex: 1 }}>
                         <ClientForm client={selectedClient} onSuccess={handleSuccess} />
                     </Box>
+                </Box>
+            </Fade>
+
+            <Fade in={tab === 3}>
+                <Box sx={{ display: tab === 3 ? 'block' : 'none', mt: 2 }}>
+                    <LogPage />
                 </Box>
             </Fade>
         </Container>
