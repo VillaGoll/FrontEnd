@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://backenvillagolbackend.fly.dev/api',
+    baseURL: 'https://backenvillagolbackend.fly.dev/api', // URL pública de tu backend en Fly.io
     headers: {
         'Content-Type': 'application/json',
     },
