@@ -29,6 +29,7 @@ interface BookingCellProps {
     timeSlot: string;
     onBookingUpdate: () => void;
     isPast: boolean;
+    courtColor?: string;
 }
 
 const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast }: BookingCellProps) => {
@@ -176,14 +177,30 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
     const filter = createFilterOptions<AutocompleteOption>();
 
     const getBackgroundColor = () => {
-        if (!booking) return 'transparent';
-        if (booking.status === 'Llegó') return 'rgba(0, 200, 0, 0.3)';
-        if (booking.status === 'No llegó') return 'rgba(255, 0, 0, 0.3)';
+        // Solo aplicar colores para estados específicos de reserva
+        if (booking) {
+            if (booking.status === 'Llegó') return 'rgba(0, 200, 0, 0.5)';
+            if (booking.status === 'No llegó') return 'rgba(255, 0, 0, 0.5)';
+            // Si hay reserva pero sin estado específico, usar color amarillo
+            return 'rgba(255, 235, 59, 0.2)';
+        }
+        
+        // Si no hay reserva, dejar transparente para que se vea el color de la tabla
         return 'transparent';
     };
 
     return (
-        <TableCell sx={{ backgroundColor: getBackgroundColor(), position: 'relative' }}>
+        <TableCell 
+            sx={{ 
+                backgroundColor: getBackgroundColor(), 
+                position: 'relative',
+                padding: { xs: '8px 4px', sm: '16px 8px' },
+                height: { xs: '140px', sm: 'auto' },
+                overflow: 'visible',
+                minWidth: { xs: '130px', sm: '150px' },
+                whiteSpace: 'normal'
+            }}
+        >
             {booking?.isPermanent && (
                 <Chip 
                     label="Permanente" 
@@ -191,10 +208,13 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                     color="primary" 
                     sx={{ 
                         position: 'absolute', 
-                        top: 4, 
-                        right: 4, 
-                        fontSize: '0.7rem',
-                        height: '20px'
+                        top: 2, 
+                        right: 2, 
+                        fontSize: '0.6rem',
+                        height: '16px',
+                        '& .MuiChip-label': {
+                            padding: '0 4px'
+                        }
                     }} 
                 />
             )}
@@ -238,7 +258,19 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                     return option.name;
                 }}
                 renderOption={(props, option) => <li {...props}>{'title' in option ? option.title : option.name}</li>}
-                sx={{ width: 150 }}
+                sx={{ 
+                    width: { xs: '100%', sm: 150 },
+                    mb: 1,
+                    '& .MuiInputBase-root': {
+                        fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                    },
+                    '& .MuiAutocomplete-input': {
+                        padding: '4px 6px !important'
+                    },
+                    '& .MuiAutocomplete-endAdornment': {
+                        top: 'calc(50% - 12px)'
+                    }
+                }}
                 freeSolo
                 disabled={isPast && !booking}
                 renderInput={(params) => (
@@ -248,6 +280,10 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                         placeholder="Nombre Cliente"
                         onChange={(e) => setClientName(e.target.value)}
                         disabled={isPast && !booking}
+                        InputProps={{
+                            ...params.InputProps,
+                            style: { fontSize: '0.75rem' }
+                        }}
                     />
                 )}
             />
@@ -259,41 +295,82 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                 onChange={(e) => setDeposit(e.target.value)}
                 onWheel={(e) => (e.target as HTMLInputElement).blur()} 
                 fullWidth
-                inputProps={{ min: 0 }}
+                sx={{ 
+                    mb: 1,
+                    '& .MuiInputBase-root': {
+                        fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                    },
+                    '& input': {
+                        padding: '4px 6px'
+                    }
+                }}
+                inputProps={{ 
+                    min: 0,
+                    style: { fontSize: '0.75rem' }
+                }}
                 disabled={isPast && !booking}
             />
-            {auth?.user?.role === 'admin' && (
-                <Checkbox 
-                    checked={arrived} 
-                    onChange={(e) => setArrived(e.target.checked)} 
-                    disabled={isPast && !booking}
-                />
-            )}
-            <Button 
-                onClick={handleSave} 
-                size="small" 
-                disabled={!isDirty || !clientName || (isPast && !booking) || (booking && auth?.user?.role !== 'admin')}
-            >
-                {booking ? 'Actualizar' : 'Guardar'}
-            </Button>
-            {auth?.user?.role === 'admin' && booking && (
-                <>
-                    <IconButton onClick={handleDelete} size="small" disabled={isPast}>
-                        <DeleteIcon />
-                    </IconButton>
-                    <Button 
-                        onClick={handlePermanentToggle}
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+                {auth?.user?.role === 'admin' && (
+                    <Checkbox 
+                        checked={arrived} 
+                        onChange={(e) => setArrived(e.target.checked)} 
+                        disabled={isPast && !booking}
                         size="small"
-                        variant={booking.isPermanent ? "contained" : "outlined"}
-                        color={booking.isPermanent ? "secondary" : "primary"}
-                        startIcon={<RepeatIcon />}
-                        sx={{ ml: 1, fontSize: '0.7rem', minWidth: 'auto' }}
-                        disabled={isPast}
-                    >
-                        {booking.isPermanent ? 'No Perm.' : 'Perm.'}
-                    </Button>
-                </>
-            )}
+                        sx={{ 
+                            padding: '2px',
+                            '& .MuiSvgIcon-root': {
+                                fontSize: { xs: '0.9rem', sm: '1.1rem' }
+                            }
+                        }}
+                    />
+                )}
+                <Button 
+                    onClick={handleSave} 
+                    size="small" 
+                    disabled={!isDirty || !clientName || (isPast && !booking) || (booking && auth?.user?.role !== 'admin')}
+                    sx={{ 
+                        fontSize: { xs: '0.65rem', sm: '0.75rem' },
+                        padding: { xs: '2px 4px', sm: '3px 8px' },
+                        minWidth: { xs: '50px', sm: 'auto' }
+                    }}
+                >
+                    {booking ? 'Actualizar' : 'Guardar'}
+                </Button>
+                {auth?.user?.role === 'admin' && booking && (
+                    <>
+                        <IconButton 
+                            onClick={handleDelete} 
+                            size="small" 
+                            disabled={isPast}
+                            sx={{ 
+                                padding: '2px',
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: { xs: '0.9rem', sm: '1.1rem' }
+                                }
+                            }}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                        <Button 
+                            onClick={handlePermanentToggle}
+                            size="small"
+                            variant={booking.isPermanent ? "contained" : "outlined"}
+                            color={booking.isPermanent ? "secondary" : "primary"}
+                            startIcon={<RepeatIcon sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }} />}
+                            sx={{ 
+                                ml: { xs: 0, sm: 1 }, 
+                                fontSize: { xs: '0.6rem', sm: '0.7rem' }, 
+                                minWidth: 'auto',
+                                padding: { xs: '1px 2px', sm: '3px 6px' }
+                            }}
+                            disabled={isPast}
+                        >
+                            {booking.isPermanent ? 'No Perm.' : 'Perm.'}
+                        </Button>
+                    </>
+                )}
+            </div>
             <Dialog open={openDialog} onClose={handleCloseDialog}>
                 <DialogTitle>Confirmar</DialogTitle>
                 <DialogContent>

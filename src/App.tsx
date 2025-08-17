@@ -15,8 +15,8 @@ import 'react-toastify/dist/ReactToastify.css';
 export function App() {
     return (
         <AuthProvider>
-            <ToastContainer />
             <Router>
+                <ToastContainer />
                 <CssBaseline />
                 <Routes>
                     <Route path="/login" element={<LoginPage />} />

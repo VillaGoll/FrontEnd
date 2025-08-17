@@ -1,6 +1,7 @@
 import { createContext, useReducer, type ReactNode, useEffect } from 'react';
 import authService from '../services/auth.service';
 import { jwtDecode } from 'jwt-decode';
+import { checkTokenExpiration } from '../utils/auth';
 
 interface User {
     id: string;
@@ -55,24 +56,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                const decodedToken: any = jwtDecode(token);
-                if (decodedToken.exp * 1000 > Date.now()) {
+        if (checkTokenExpiration()) {
+            dispatch({ type: 'LOGOUT' });
+        } else {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const decodedToken: any = jwtDecode(token);
                     const user = { id: decodedToken.user.id, name: decodedToken.user.name, email: decodedToken.user.email, role: decodedToken.user.role };
                     dispatch({ type: 'LOGIN', payload: { token, user } });
-                } else {
+                } catch (error) {
+                    console.error('Invalid token');
                     localStorage.removeItem('token');
                     dispatch({ type: 'LOGOUT' });
                 }
-            } catch (error) {
-                console.error('Invalid token');
-                localStorage.removeItem('token');
+            } else {
                 dispatch({ type: 'LOGOUT' });
             }
-        } else {
-            dispatch({ type: 'LOGOUT' });
         }
     }, []);
 
