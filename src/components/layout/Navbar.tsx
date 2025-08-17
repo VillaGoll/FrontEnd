@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, Modal, TextField, useTheme } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, Modal, TextField } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useState, useEffect } from 'react';
@@ -13,7 +13,6 @@ interface Court {
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
-  const theme = useTheme();
     const navigate = useNavigate();
     const [courts, setCourts] = useState<Court[]>([]);
     const [originalCourts, setOriginalCourts] = useState<Court[]>([]);

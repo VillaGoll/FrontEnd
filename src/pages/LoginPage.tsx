@@ -16,14 +16,14 @@ const LoginPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-        const { dispatch } = useAuth();
+        const { login } = useAuth();
     const navigate = useNavigate();
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             const response = await authService.login(formData);
-            dispatch({ type: 'LOGIN', payload: response.data });
+            login(response.data);
             navigate('/');
         } catch (error) {
             console.error(error);
