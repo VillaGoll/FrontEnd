@@ -1,4 +1,4 @@
-import { TableCell, TextField, Checkbox, Button, IconButton, Autocomplete, createFilterOptions, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Chip } from '@mui/material';
+import { TableCell, TextField, Checkbox, Button, IconButton, Autocomplete, createFilterOptions, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Chip, Typography } from '@mui/material';
 import { useState, useEffect, useContext } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RepeatIcon from '@mui/icons-material/Repeat';
@@ -30,9 +30,10 @@ interface BookingCellProps {
     onBookingUpdate: () => void;
     isPast: boolean;
     courtColor?: string;
+    hour: string;
 }
 
-const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast }: BookingCellProps) => {
+const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast, hour, courtColor }: BookingCellProps) => {
     const auth = useContext(AuthContext);
     const [clientName, setClientName] = useState(booking?.clientName || '');
     const [deposit, setDeposit] = useState(booking?.deposit?.toString() || '');
@@ -58,7 +59,7 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
 
     useEffect(() => {
         if (!booking) {
-            if(clientName || deposit) {
+            if (clientName || deposit) {
                 setIsDirty(true);
             } else {
                 setIsDirty(false);
@@ -84,7 +85,7 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
 
         const bookingData: Omit<BookingData, '_id'> = {
             clientName,
-            client: selectedClient?._id, 
+            client: selectedClient?._id,
             deposit: Number(deposit),
             status: auth?.user?.role === 'admin' ? (arrived ? 'Llegó' : 'No llegó') : 'No llegó',
             court: courtId,
@@ -179,43 +180,46 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
     const getBackgroundColor = () => {
         // Solo aplicar colores para estados específicos de reserva
         if (booking) {
-            if (booking.status === 'Llegó') return 'rgba(0, 200, 0, 0.5)';
-            if (booking.status === 'No llegó') return 'rgba(255, 0, 0, 0.5)';
+            if (booking.status === 'Llegó') return 'rgba(107, 255, 107, 0.99)';
+            if (booking.status === 'No llegó') return 'rgb(250, 78, 78)';
             // Si hay reserva pero sin estado específico, usar color amarillo
-            return 'rgba(255, 235, 59, 0.2)';
         }
-        
+
         // Si no hay reserva, dejar transparente para que se vea el color de la tabla
-        return 'transparent';
+        return 'rgb(255, 255, 255)';
     };
 
     return (
-        <TableCell 
-            sx={{ 
-                backgroundColor: getBackgroundColor(), 
+        <TableCell
+            sx={{
+                backgroundColor: getBackgroundColor(),
                 position: 'relative',
                 padding: { xs: '8px 4px', sm: '16px 8px' },
                 height: { xs: '140px', sm: 'auto' },
                 overflow: 'visible',
                 minWidth: { xs: '130px', sm: '150px' },
-                whiteSpace: 'normal'
+                whiteSpace: 'normal',
+                border: `1px solid ${courtColor}`
             }}
         >
+            <Typography variant="caption" sx={{ fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
+                {hour}
+            </Typography>
             {booking?.isPermanent && (
-                <Chip 
-                    label="Permanente" 
-                    size="small" 
-                    color="primary" 
-                    sx={{ 
-                        position: 'absolute', 
-                        top: 2, 
-                        right: 2, 
+                <Chip
+                    label="Permanente"
+                    size="small"
+                    color="primary"
+                    sx={{
+                        position: 'absolute',
+                        top: 2,
+                        right: 2,
                         fontSize: '0.6rem',
                         height: '16px',
                         '& .MuiChip-label': {
                             padding: '0 4px'
                         }
-                    }} 
+                    }}
                 />
             )}
             <Autocomplete<AutocompleteOption, false, false, true>
@@ -258,7 +262,7 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                     return option.name;
                 }}
                 renderOption={(props, option) => <li {...props}>{'title' in option ? option.title : option.name}</li>}
-                sx={{ 
+                sx={{
                     width: { xs: '100%', sm: 150 },
                     mb: 1,
                     '& .MuiInputBase-root': {
@@ -278,11 +282,28 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                         {...params}
                         variant="standard"
                         placeholder="Nombre Cliente"
+                        sx={{
+                            // apuntamos al input real usado por MUI
+                            '& .MuiInputBase-input::placeholder': {
+                                color: 'rgba(0,0,0,1)', // negro puro
+                                opacity: 1,             // quitar la opacidad por defecto
+                                fontSize: '0.75rem'
+                            },
+                            // por si está disabled (MUI añade la clase .Mui-disabled)
+                            '& .MuiInputBase-input.Mui-disabled::placeholder': {
+                                color: 'rgba(0,0,0,1)',
+                                opacity: 1
+                            }
+                        }}
                         onChange={(e) => setClientName(e.target.value)}
                         disabled={isPast && !booking}
                         InputProps={{
                             ...params.InputProps,
-                            style: { fontSize: '0.75rem' }
+                            style: {
+                                fontSize: '0.75rem',
+                                fontWeight: !isPast || booking ? 'bold' : 'normal',
+                                color: !isPast || booking ? 'black' : 'rgba(0, 0, 0, 0.38)'
+                            }
                         }}
                     />
                 )}
@@ -293,9 +314,19 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                 type="number"
                 value={deposit}
                 onChange={(e) => setDeposit(e.target.value)}
-                onWheel={(e) => (e.target as HTMLInputElement).blur()} 
+                onWheel={(e) => (e.target as HTMLInputElement).blur()}
                 fullWidth
-                sx={{ 
+                sx={{
+                    '& .MuiInputBase-input::placeholder': {
+                        color: 'rgba(0,0,0,1)', // negro puro
+                        opacity: 1,             // quitar la opacidad por defecto
+                        fontSize: '0.75rem'
+                    },
+                    // por si está disabled (MUI añade la clase .Mui-disabled)
+                    '& .MuiInputBase-input.Mui-disabled::placeholder': {
+                        color: 'rgba(0,0,0,1)',
+                        opacity: 1
+                    },
                     mb: 1,
                     '& .MuiInputBase-root': {
                         fontSize: { xs: '0.8rem', sm: '0.875rem' }
@@ -304,20 +335,24 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                         padding: '4px 6px'
                     }
                 }}
-                inputProps={{ 
+                inputProps={{
                     min: 0,
-                    style: { fontSize: '0.75rem' }
+                    style: {
+                        fontSize: '0.75rem',
+                        fontWeight: !isPast || booking ? 'bold' : 'normal',
+                        color: !isPast || booking ? 'black' : 'rgba(0, 0, 0, 0.38)'
+                    }
                 }}
                 disabled={isPast && !booking}
             />
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
                 {auth?.user?.role === 'admin' && (
-                    <Checkbox 
-                        checked={arrived} 
-                        onChange={(e) => setArrived(e.target.checked)} 
+                    <Checkbox
+                        checked={arrived}
+                        onChange={(e) => setArrived(e.target.checked)}
                         disabled={isPast && !booking}
                         size="small"
-                        sx={{ 
+                        sx={{
                             padding: '2px',
                             '& .MuiSvgIcon-root': {
                                 fontSize: { xs: '0.9rem', sm: '1.1rem' }
@@ -325,11 +360,11 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                         }}
                     />
                 )}
-                <Button 
-                    onClick={handleSave} 
-                    size="small" 
+                <Button
+                    onClick={handleSave}
+                    size="small"
                     disabled={!isDirty || !clientName || (isPast && !booking) || (booking && auth?.user?.role !== 'admin')}
-                    sx={{ 
+                    sx={{
                         fontSize: { xs: '0.65rem', sm: '0.75rem' },
                         padding: { xs: '2px 4px', sm: '3px 8px' },
                         minWidth: { xs: '50px', sm: 'auto' }
@@ -339,11 +374,11 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                 </Button>
                 {auth?.user?.role === 'admin' && booking && (
                     <>
-                        <IconButton 
-                            onClick={handleDelete} 
-                            size="small" 
+                        <IconButton
+                            onClick={handleDelete}
+                            size="small"
                             disabled={isPast}
-                            sx={{ 
+                            sx={{
                                 padding: '2px',
                                 '& .MuiSvgIcon-root': {
                                     fontSize: { xs: '0.9rem', sm: '1.1rem' }
@@ -352,15 +387,15 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                         >
                             <DeleteIcon />
                         </IconButton>
-                        <Button 
+                        <Button
                             onClick={handlePermanentToggle}
                             size="small"
                             variant={booking.isPermanent ? "contained" : "outlined"}
                             color={booking.isPermanent ? "secondary" : "primary"}
                             startIcon={<RepeatIcon sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }} />}
-                            sx={{ 
-                                ml: { xs: 0, sm: 1 }, 
-                                fontSize: { xs: '0.6rem', sm: '0.7rem' }, 
+                            sx={{
+                                ml: { xs: 0, sm: 1 },
+                                fontSize: { xs: '0.6rem', sm: '0.7rem' },
                                 minWidth: 'auto',
                                 padding: { xs: '1px 2px', sm: '3px 6px' }
                             }}

@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, IconButton, Box, Button, useMediaQuery, useTheme, CircularProgress } from '@mui/material';
 import BookingCell from './BookingCell';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import bookingService from '../../services/booking.service';
 import courtService from '../../services/court.service';
 import type { BookingData } from '../../types/booking';
@@ -29,7 +29,22 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
     const [bookings, setBookings] = useState<BookingData[]>([]);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [court, setCourt] = useState<Court | null>(null);
+    //const [courtColor, setCourtColor] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const courtColor = useMemo(() => {
+        if (!court?.name) return '';
+        switch (court.name) {
+            case 'Cancha 1':
+                return 'rgba(30, 126, 11, 0.8)';
+            case 'Cancha 2':
+                return 'rgba(196, 199, 52, 0.8)';
+            case 'Cancha grande':
+                return 'rgba(38, 204, 233, 0.8)';
+            default:
+                return '';
+        }
+    }, [court?.name]);
 
     const weekStartsOn = 1; // Monday
     const week = eachDayOfInterval({
@@ -43,7 +58,7 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
             // Obtener solo las reservas de la semana actual para mejorar rendimiento
             const startDate = week[0].toLocaleDateString('en-CA', { timeZone: 'America/Guatemala' });
             const endDate = week[6].toLocaleDateString('en-CA', { timeZone: 'America/Guatemala' });
-            
+
             bookingService.getBookingsByCourtAndDateRange(courtId, startDate, endDate)
                 .then(response => {
                     setBookings(response.data);
@@ -59,7 +74,7 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
 
     useEffect(() => {
         fetchBookings();
-        
+
         // Fetch court details
         if (courtId) {
             courtService.getAllCourts()
@@ -155,11 +170,11 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                 const day = week[c - 1];
                 const hour = hours[r - 1];
                 const booking = getBookingForSlot(day, hour);
-                
+
                 if (!ws[cellRef]) continue;
-                
+
                 if (!ws[cellRef].s) ws[cellRef].s = {};
-                
+
                 // Apply court color to all cells
                 if (court && court.color) {
                     try {
@@ -181,7 +196,7 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                         console.error('Error applying color:', e);
                     }
                 }
-                
+
                 // Additional styling for bookings
                 if (booking) {
                     if (booking.status === 'Llegó') {
@@ -212,11 +227,11 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
         XLSX.writeFile(wb, filename);
     }, [bookings, courtId, court, week, hours]);
     return (
-        <TableContainer component={Paper} sx={{ backgroundColor: court?.color ? `${court.color}25` : 'transparent' }}>
+        <TableContainer component={Paper} >
             <Typography variant="h4" component="h1" gutterBottom>
                 {court?.name}
             </Typography>
-            
+
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
                 <IconButton onClick={handlePreviousWeek}>
                     <ArrowBackIosNewIcon />
@@ -228,9 +243,9 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                     {loading && <CircularProgress size={20} />}
                 </Box>
                 <Box>
-                    <Button 
-                        variant="contained" 
-                        color="primary" 
+                    <Button
+                        variant="contained"
+                        color="primary"
                         startIcon={<FileDownloadIcon />}
                         onClick={exportToExcel}
                         size="small"
@@ -243,12 +258,12 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                     </IconButton>
                 </Box>
             </Box>
-            <Table 
-                sx={{ 
+            <Table
+                sx={{
                     minWidth: { xs: 800, sm: 900 },
                     width: '100%',
                     tableLayout: 'fixed',
-                    backgroundColor: court?.color ? `${court.color}25` : 'transparent', // Aplicar color de la cancha con 25% de opacidad
+                    backgroundColor: `${courtColor}`, // Aplicar color de la cancha con 25% de opacidad
                     '& th, & td': {
                         padding: isMobile ? '6px 2px' : '16px 8px',
                         fontSize: isMobile ? '0.7rem' : '0.875rem',
@@ -259,22 +274,22 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                         fontWeight: 'bold',
                         backgroundColor: 'rgba(0, 0, 0, 0.04)'
                     }
-                }} 
+                }}
                 aria-label="booking table"
             >
                 <TableHead>
                     <TableRow>
-                        <TableCell sx={{ width: { xs: '40px', sm: '60px' } }}>Hora</TableCell>
                         {week.map(day => (
-                            <TableCell 
+                            <TableCell
                                 key={day.toString()}
-                                sx={{ 
+                                sx={{
                                     wordBreak: 'break-word',
-                                    whiteSpace: { xs: 'normal', sm: 'nowrap' }
+                                    whiteSpace: { xs: 'normal', sm: 'nowrap' },
+                                    border: `1px solid ${courtColor}`
                                 }}
                             >
-                                {isMobile 
-                                    ? format(day, 'EEE d', { locale: es }) 
+                                {isMobile
+                                    ? format(day, 'EEE d', { locale: es })
                                     : format(day, 'eeee d', { locale: es })
                                 }
                             </TableCell>
@@ -284,22 +299,11 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                 <TableBody>
                     {hours.map((hour) => (
                         <TableRow key={hour}>
-                            <TableCell 
-                                component="th" 
-                                scope="row"
-                                sx={{ 
-                                    width: { xs: '40px', sm: '60px' },
-                                    fontWeight: 'medium',
-                                    fontSize: { xs: '0.65rem', sm: '0.75rem' }
-                                }}
-                            >
-                                {hour}
-                            </TableCell>
                             {week.map(day => {
                                 // Determine if this day/hour combination is in the past (in Guatemala time)
                                 const dayKey = day.toLocaleDateString('en-CA', { timeZone: 'America/Guatemala' });
                                 const cellHour = parseInt(hour.split(':')[0], 10);
-                                
+
                                 // A slot is in the past if:
                                 // 1. The day is before today, OR
                                 // 2. It's today but the hour is in the past
@@ -311,15 +315,16 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                                 const dayLocalStr = dayKey;
 
                                 return (
-                                    <BookingCell 
-                                        key={day.toString()} 
-                                        booking={getBookingForSlot(day, hour)} 
-                                        courtId={courtId} 
-                                        date={dayLocalStr} 
-                                        timeSlot={hour} 
-                                        onBookingUpdate={fetchBookings} 
+                                    <BookingCell
+                                        key={day.toString()}
+                                        booking={getBookingForSlot(day, hour)}
+                                        courtId={courtId}
+                                        date={dayLocalStr}
+                                        timeSlot={hour}
+                                        onBookingUpdate={fetchBookings}
                                         isPast={isPast}
-                                        courtColor={court?.color}
+                                        courtColor={courtColor}
+                                        hour={hour}
                                     />
                                 );
                             })}
