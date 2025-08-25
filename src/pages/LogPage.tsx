@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { getLogs } from '../services/logService';
 import type { Log } from '../types/index';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Grid, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Grid, Typography, TablePagination } from '@mui/material';
 
 const LogPage = () => {
     const [logs, setLogs] = useState<Log[]>([]);
     const [filteredLogs, setFilteredLogs] = useState<Log[]>([]);
     const [filters, setFilters] = useState({ date: '', user: '', time: '' });
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     useEffect(() => {
         const fetchLogs = async () => {
@@ -40,10 +42,20 @@ const LogPage = () => {
             filtered = filtered.filter(log => new Date(log.createdAt).toTimeString().startsWith(filters.time));
         }
         setFilteredLogs(filtered);
+        setPage(0);
     }, [filters, logs]);
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFilters({ ...filters, [e.target.name]: e.target.value });
+    };
+
+    const handleChangePage = (_event: unknown, newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
     };
 
     return (
@@ -66,7 +78,7 @@ const LogPage = () => {
                     <TextField
                         type="text"
                         name="user"
-                        placeholder="Filter by user"
+                        placeholder="Filtrar por usuario"
                         value={filters.user}
                         onChange={handleFilterChange}
                         fullWidth
@@ -89,13 +101,13 @@ const LogPage = () => {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Date</TableCell>
-                            <TableCell>User</TableCell>
-                            <TableCell>Action</TableCell>
+                            <TableCell>Fecha</TableCell>
+                            <TableCell>Usuario</TableCell>
+                            <TableCell>Acción</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredLogs.map(log => (
+                        {filteredLogs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(log => (
                             <TableRow key={log._id}>
                                 <TableCell>{new Date(log.createdAt).toLocaleString()}</TableCell>
                                 <TableCell>{log.user}</TableCell>
@@ -105,6 +117,29 @@ const LogPage = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <TablePagination
+                rowsPerPageOptions={[10, 50, 100]}
+                component="div"
+                count={filteredLogs.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPage="Filas por página:"
+                labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+                SelectProps={{
+                    MenuProps: {
+                        anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left"
+                        },
+                        transformOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left"
+                        },
+                    }
+                }}
+            />
         </Paper>
     );
 };

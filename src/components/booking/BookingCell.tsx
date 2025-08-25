@@ -377,7 +377,6 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                         <IconButton
                             onClick={handleDelete}
                             size="small"
-                            disabled={isPast}
                             sx={{
                                 padding: '2px',
                                 '& .MuiSvgIcon-root': {
@@ -399,7 +398,6 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                                 minWidth: 'auto',
                                 padding: { xs: '1px 2px', sm: '3px 6px' }
                             }}
-                            disabled={isPast}
                         >
                             {booking.isPermanent ? 'No Perm.' : 'Perm.'}
                         </Button>
