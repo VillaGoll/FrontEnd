@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Container, Typography, TextField, Button, Box, IconButton, InputAdornment } from '@mui/material';
+import { Container, Typography, TextField, Button, Box, IconButton, InputAdornment, CircularProgress } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,6 +13,7 @@ const LoginPage = () => {
         password: '',
     });
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const { email, password } = formData;
 
@@ -25,6 +26,7 @@ const LoginPage = () => {
 
     const onSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             console.log(formData)
             await login(formData);
@@ -33,6 +35,8 @@ const LoginPage = () => {
         } catch (error) {
             toast.error(error.response?.data?.msg || 'An error occurred');
             console.error(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -50,7 +54,7 @@ const LoginPage = () => {
                         id="email"
                         label="Email Address"
                         name="email"
-                        autoComplete="email"
+                        autoComplete="off"
                         autoFocus
                         value={email}
                         onChange={onChange}
@@ -63,7 +67,7 @@ const LoginPage = () => {
                         label="Password"
                         type={showPassword ? 'text' : 'password'}
                         id="password"
-                        autoComplete="current-password"
+                        autoComplete="new-password"
                         value={password}
                         onChange={onChange}
                         InputProps={{
@@ -85,8 +89,9 @@ const LoginPage = () => {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
+                        disabled={loading}
                     >
-                        Sign In
+                        {loading ? <CircularProgress size={24} /> : 'Sign In'}
                     </Button>
                 </Box>
             </Box>
