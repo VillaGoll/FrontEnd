@@ -6,7 +6,6 @@ import clientService from '../../services/client.service';
 interface Client {
     _id: string;
     name: string;
-    email: string;
     phone: string;
 }
 
@@ -18,24 +17,22 @@ interface ClientFormProps {
 const ClientForm = ({ client, onSuccess }: ClientFormProps) => {
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
 
     useEffect(() => {
         if (client) {
             setName(client.name);
-            setEmail(client.email);
+
             setPhone(client.phone);
         } else {
             setName('');
-            setEmail('');
             setPhone('');
         }
     }, [client]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const clientData = { name, email, phone };
+        const clientData = { name, phone };
         setLoading(true);
         if (client) {
             clientService.updateClient(client._id, clientData)
@@ -54,7 +51,6 @@ const ClientForm = ({ client, onSuccess }: ClientFormProps) => {
                     toast.success('Cliente creado con éxito');
                     onSuccess();
                     setName('');
-                    setEmail('');
                     setPhone('');
                 })
                 .catch(err => {
@@ -74,14 +70,6 @@ const ClientForm = ({ client, onSuccess }: ClientFormProps) => {
                         label="Nombre"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        fullWidth
-                        margin="normal"
-                        autoComplete="off"
-                    />
-                    <TextField
-                        label="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
                         fullWidth
                         margin="normal"
                         autoComplete="off"

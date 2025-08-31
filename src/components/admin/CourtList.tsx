@@ -82,13 +82,15 @@ const CourtList = ({ onEdit, refresh }: CourtListProps) => {
                             <ListItemText
                                 primary={court.name}
                                 secondary={
-                                    <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                                        <Chip size="small" label={`6:00 ${formatCurrency(court.pricing?.sixAM ?? 0)}`} />
-                                        <Chip size="small" label={`7-15 ${formatCurrency(court.pricing?.sevenToFifteen ?? 0)}`} />
-                                        <Chip size="small" label={`16-21 ${formatCurrency(court.pricing?.sixteenToTwentyOne ?? 0)}`} />
-                                        <Chip size="small" label={`22:00 ${formatCurrency(court.pricing?.twentyTwo ?? 0)}`} />
-                                        <Chip size="small" label={`23:00 ${formatCurrency(court.pricing?.twentyThree ?? 0)}`} />
-                                    </Stack>
+                                    <Typography component="div" variant="body2">
+                                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                                            <Chip size="small" label={`6:00 ${formatCurrency(court.pricing?.sixAM ?? 0)}`} />
+                                            <Chip size="small" label={`7-15 ${formatCurrency(court.pricing?.sevenToFifteen ?? 0)}`} />
+                                            <Chip size="small" label={`16-21 ${formatCurrency(court.pricing?.sixteenToTwentyOne ?? 0)}`} />
+                                            <Chip size="small" label={`22:00 ${formatCurrency(court.pricing?.twentyTwo ?? 0)}`} />
+                                            <Chip size="small" label={`23:00 ${formatCurrency(court.pricing?.twentyThree ?? 0)}`} />
+                                        </Stack>
+                                    </Typography>
                                 }
                             />
                         </ListItem>
