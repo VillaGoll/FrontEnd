@@ -350,7 +350,7 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                     <Checkbox
                         checked={arrived}
                         onChange={(e) => setArrived(e.target.checked)}
-                        disabled={isPast && !booking}
+                        disabled={!booking}
                         size="small"
                         sx={{
                             padding: '2px',
@@ -363,7 +363,7 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                 <Button
                     onClick={handleSave}
                     size="small"
-                    disabled={!isDirty || !clientName || (isPast && !booking) || (booking && auth?.user?.role !== 'admin')}
+                    disabled={!isDirty || !clientName || (!booking) || (booking && auth?.user?.role !== 'admin')}
                     sx={{
                         fontSize: { xs: '0.65rem', sm: '0.75rem' },
                         padding: { xs: '2px 4px', sm: '3px 8px' },
@@ -377,6 +377,7 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                         <IconButton
                             onClick={handleDelete}
                             size="small"
+                            //disabled={isPast}
                             sx={{
                                 padding: '2px',
                                 '& .MuiSvgIcon-root': {
@@ -398,6 +399,7 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                                 minWidth: 'auto',
                                 padding: { xs: '1px 2px', sm: '3px 6px' }
                             }}
+                            //disabled={isPast}
                         >
                             {booking.isPermanent ? 'No Perm.' : 'Perm.'}
                         </Button>

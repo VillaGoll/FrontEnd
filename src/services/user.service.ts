@@ -4,6 +4,10 @@ const getAllUsers = () => {
     return api.get('/users');
 };
 
+const getAllEmails = () => {
+    return api.get('/users/emails');
+};
+
 const createUser = (data: any) => {
     return api.post('/users', data);
 };
@@ -18,6 +22,7 @@ const deleteUser = (id: string) => {
 
 const userService = {
     getAllUsers,
+    getAllEmails,
     createUser,
     updateUser,
     deleteUser,

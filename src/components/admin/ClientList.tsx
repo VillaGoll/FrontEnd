@@ -28,7 +28,6 @@ import { Edit, Delete, BarChart } from '@mui/icons-material';
 interface Client {
     _id: string;
     name: string;
-    email: string;
     phone: string;
 }
 
@@ -180,7 +179,7 @@ const ClientList = ({ onEdit, refresh }: Props) => {
                         >
                             <ListItemText
                                 primary={client.name}
-                                secondary={`${client.email || 'Sin email'} · ${client.phone || 'Sin teléfono'}`}
+                                secondary={`Tel: ${client.phone || 'Sin teléfono'}`}
                             />
                         </ListItem>
                     ))}
@@ -225,8 +224,7 @@ const ClientList = ({ onEdit, refresh }: Props) => {
                                     <Box>
                                         <Typography variant="subtitle2">Cliente</Typography>
                                         <Typography>{statsData.client.name}</Typography>
-                                        <Typography variant="body2" color="text.secondary">{statsData.client.email || 'Sin email'}</Typography>
-                                        <Typography variant="body2" color="text.secondary">{statsData.client.phone || 'Sin teléfono'}</Typography>
+                                        <Typography variant="body2" color="text.secondary">Tel:{statsData.client.phone || 'Sin teléfono'}</Typography>
                                     </Box>
                                     <Box>
                                         <Typography variant="subtitle2">Última reserva</Typography>
