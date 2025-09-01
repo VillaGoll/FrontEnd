@@ -261,7 +261,11 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                     }
                     return option.name;
                 }}
-                renderOption={(props, option) => <li {...props}>{'title' in option ? option.title : option.name}</li>}
+                renderOption={(props, option) => {
+                  // Usar el ID como key para clientes, o el título para opciones de "Agregar"
+                  const key = 'title' in option ? option.title : option._id;
+                  return <li {...props} key={key}>{'title' in option ? option.title : option.name}</li>;
+                }}
                 sx={{
                     width: { xs: '100%', sm: 150 },
                     mb: 1,
@@ -360,10 +364,11 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                         }}
                     />
                 )}
+                	
                 <Button
                     onClick={handleSave}
                     size="small"
-                    disabled={!isDirty || !clientName || (!booking) || (booking && auth?.user?.role !== 'admin')}
+                    disabled={!isDirty || !clientName  || (booking && auth?.user?.role !== 'admin')}
                     sx={{
                         fontSize: { xs: '0.65rem', sm: '0.75rem' },
                         padding: { xs: '2px 4px', sm: '3px 8px' },

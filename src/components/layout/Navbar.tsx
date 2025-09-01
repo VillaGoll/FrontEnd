@@ -20,7 +20,6 @@ const Navbar = () => {
     const [openReAuth, setOpenReAuth] = useState(false);
     const [password, setPassword] = useState('');
     const open = Boolean(anchorEl);
-    console.log(courts)
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
