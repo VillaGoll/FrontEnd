@@ -305,11 +305,11 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                                 const cellHour = parseInt(hour.split(':')[0], 10);
 
                                 // A slot is in the past if:
-                                // 1. The day is before today, OR
-                                // 2. It's today but the hour is in the past
+                                // 1. The day is before today
+                                // (We now allow booking in past hours of the current day for admins)
                                 const isPastDay = dayKey < todayKey; // Day is before today
-                                const isPastHour = dayKey === todayKey && cellHour < currentHour; // Today but hour is in the past
-                                const isPast = isPastDay || isPastHour;
+                                const isPastHour = false; // Disabled to allow admins to book past hours of today
+                                const isPast = isPastDay; // Only consider past days as 'past'
 
                                 // Ensure we send the correct local date string for saving (YYYY-MM-DD in America/Guatemala)
                                 const dayLocalStr = dayKey;
