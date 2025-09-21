@@ -116,7 +116,7 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
     // Helper for time-level past determination using America/Guatemala
     const now = new Date();
     const todayKey = now.toLocaleDateString('en-CA', { timeZone: 'America/Guatemala' }); // YYYY-MM-DD
-    const currentHour = now.getHours(); // Current hour in local time
+    //const currentHour = now.getHours(); // Current hour in local time
 
     const handlePreviousWeek = () => {
         setCurrentDate(subDays(currentDate, 7));
@@ -302,13 +302,13 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                             {week.map(day => {
                                 // Determine if this day/hour combination is in the past (in Guatemala time)
                                 const dayKey = day.toLocaleDateString('en-CA', { timeZone: 'America/Guatemala' });
-                                const cellHour = parseInt(hour.split(':')[0], 10);
+                                //const cellHour = parseInt(hour.split(':')[0], 10);
 
                                 // A slot is in the past if:
                                 // 1. The day is before today
                                 // (We now allow booking in past hours of the current day for admins)
                                 const isPastDay = dayKey < todayKey; // Day is before today
-                                const isPastHour = false; // Disabled to allow admins to book past hours of today
+                                //const isPastHour = false; // Disabled to allow admins to book past hours of today
                                 const isPast = isPastDay; // Only consider past days as 'past'
 
                                 // Ensure we send the correct local date string for saving (YYYY-MM-DD in America/Guatemala)
