@@ -7,6 +7,8 @@ import bookingService from '../../services/booking.service';
 import clientService from '../../services/client.service';
 import type { BookingData } from '../../types/booking';
 import { toast } from 'react-toastify';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface Client {
     _id: string;
@@ -31,9 +33,11 @@ interface BookingCellProps {
     isPast: boolean;
     courtColor?: string;
     hour: string;
+    day: Date;
+    courtName: string;
 }
 
-const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast, hour, courtColor }: BookingCellProps) => {
+const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast, hour, courtColor, day, courtName }: BookingCellProps) => {
     const auth = useContext(AuthContext);
     const [clientName, setClientName] = useState(booking?.clientName || '');
     const [deposit, setDeposit] = useState(booking?.deposit?.toString() || '');
@@ -195,15 +199,21 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                 backgroundColor: getBackgroundColor(),
                 position: 'relative',
                 padding: { xs: '8px 4px', sm: '16px 8px' },
-                height: { xs: '140px', sm: 'auto' },
+                height: { xs: '180px', sm: 'auto' },
                 overflow: 'visible',
-                minWidth: { xs: '130px', sm: '150px' },
+                minWidth: { xs: '150px', sm: '170px' },
                 whiteSpace: 'normal',
                 border: `1px solid ${courtColor}`
             }}
         >
             <Typography variant="caption" sx={{ fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
                 {hour}
+            </Typography>
+            <Typography variant="caption" sx={{ display: 'block', marginBottom: '4px', textTransform: 'capitalize' }}>
+                {format(day, 'EEEE d', { locale: es })}
+            </Typography>
+            <Typography variant="caption" sx={{ display: 'block', marginBottom: '4px' }}>
+                {courtName}
             </Typography>
             {booking?.isPermanent && (
                 <Chip
