@@ -1,7 +1,12 @@
 import api from './api';
 
-const createClient = (clientData: any) => {
-    return api.post('/clients', clientData);
+const createClient = async (clientData: any) => {
+    try {
+        const response = await api.post('/clients', clientData);
+        return response;
+    } catch (error: any) {
+        throw error.response?.data?.message || 'Error creating client';
+    }
 };
 
 const getAllClients = () => {
@@ -16,8 +21,13 @@ const getClientBookings = (id: string) => {
     return api.get(`/clients/${id}/bookings`);
 };
 
-const updateClient = (id: string, clientData: any) => {
-    return api.put(`/clients/${id}`, clientData);
+const updateClient = async (id: string, clientData: any) => {
+    try {
+        const response = await api.put(`/clients/${id}`, clientData);
+        return response;
+    } catch (error: any) {
+        throw error.response?.data?.message || 'Error updating client';
+    }
 };
 
 const deleteClient = (id: string) => {

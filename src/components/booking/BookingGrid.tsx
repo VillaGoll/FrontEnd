@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, IconButton, Box, Button, useMediaQuery, useTheme, CircularProgress } from '@mui/material';
 import BookingCell from './BookingCell';
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useContext } from 'react';
 import bookingService from '../../services/booking.service';
 import courtService from '../../services/court.service';
 import type { BookingData } from '../../types/booking';
@@ -10,6 +10,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import * as XLSX from 'xlsx';
+import AuthContext from '../../context/AuthContext';
 
 const hours = Array.from({ length: 18 }, (_, i) => `${String(i + 6).padStart(2, '0')}:00`);
 
@@ -304,14 +305,19 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                                 const dayKey = day.toLocaleDateString('en-CA', { timeZone: 'America/Guatemala' });
                                 //const cellHour = parseInt(hour.split(':')[0], 10);
 
-                                // A slot is in the past if:
-                                // 1. The day is before today
-                                // (We now allow booking in past hours of the current day for admins)
-                                const isPastDay = dayKey < todayKey; // Day is before today
-                                //const isPastHour = false; // Disabled to allow admins to book past hours of today
-                                const isPast = isPastDay; // Only consider past days as 'past'
+                                // Determinar si una celda está en el pasado
+                                // Para usuarios normales: días pasados y horas pasadas del día actual
+                                // Para administradores: ninguna celda está en el pasado (pueden reservar cualquier fecha/hora)
+                                const auth = useContext(AuthContext);
+                                const isAdmin = auth?.user?.role === 'admin';
+                                
+                                // Extraer la hora de la celda actual
+                                const cellHour = parseInt(hour.split(':')[0], 10);
+                                const currentHour = now.getHours();
+                                
+                                // Si es administrador, ninguna celda está en el pasado
+                                const isPast = isAdmin ? false : (dayKey < todayKey || (dayKey === todayKey && cellHour < currentHour));
 
-                                // Ensure we send the correct local date string for saving (YYYY-MM-DD in America/Guatemala)
                                 const dayLocalStr = dayKey;
 
                                 return (
@@ -325,6 +331,8 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                                         isPast={isPast}
                                         courtColor={courtColor}
                                         hour={hour}
+                                        day={day}
+                                        courtName={court?.name || ''}
                                     />
                                 );
                             })}

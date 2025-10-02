@@ -6,6 +6,7 @@ import UserForm from '../components/admin/UserForm';
 import ClientList from '../components/admin/ClientList';
 import ClientForm from '../components/admin/ClientForm';
 import LogPage from './LogPage';
+import StatsPage from './StatsPage';
 import { useState } from 'react';
 import { Tab, Tabs, Fade } from '@mui/material';
 
@@ -62,6 +63,7 @@ const AdminPage = () => {
                     <Tab label="Usuarios" />
                     <Tab label="Clientes" />
                     <Tab label="Logs" />
+                    <Tab label="Estadísticas" />
                 </Tabs>
             </Box>
 
@@ -101,6 +103,12 @@ const AdminPage = () => {
             <Fade in={tab === 3}>
                 <Box sx={{ display: tab === 3 ? 'block' : 'none', mt: 2 }}>
                     <LogPage />
+                </Box>
+            </Fade>
+
+            <Fade in={tab === 4}>
+                <Box sx={{ display: tab === 4 ? 'block' : 'none', mt: 2 }}>
+                    <StatsPage />
                 </Box>
             </Fade>
         </Container>

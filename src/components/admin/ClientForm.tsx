@@ -41,8 +41,19 @@ const ClientForm = ({ client, onSuccess }: ClientFormProps) => {
                     onSuccess();
                 })
                 .catch(err => {
-                    console.error(err);
-                    toast.error('Error al actualizar el cliente');
+                    if (typeof err === 'string' && err.toLowerCase().includes('duplicado')) {
+                        if (err.toLowerCase().includes('nombre') && err.toLowerCase().includes('teléfono')) {
+                            toast.error('Nombre y teléfono ya existen');
+                        } else if (err.toLowerCase().includes('nombre')) {
+                            toast.error('El nombre ya existe');
+                        } else if (err.toLowerCase().includes('teléfono')) {
+                            toast.error('El teléfono ya existe');
+                        } else {
+                            toast.error(err);
+                        }
+                    } else {
+                        toast.error(err || 'Error al actualizar el cliente');
+                    }
                 })
                 .finally(() => setLoading(false));
         } else {
@@ -54,8 +65,19 @@ const ClientForm = ({ client, onSuccess }: ClientFormProps) => {
                     setPhone('');
                 })
                 .catch(err => {
-                    console.error(err);
-                    toast.error('Error al crear el cliente');
+                    if (typeof err === 'string' && err.toLowerCase().includes('duplicado')) {
+                        if (err.toLowerCase().includes('nombre') && err.toLowerCase().includes('teléfono')) {
+                            toast.error('Nombre y teléfono ya existen');
+                        } else if (err.toLowerCase().includes('nombre')) {
+                            toast.error('El nombre ya existe');
+                        } else if (err.toLowerCase().includes('teléfono')) {
+                            toast.error('El teléfono ya existe');
+                        } else {
+                            toast.error(err);
+                        }
+                    } else {
+                        toast.error(err || 'Error al crear el cliente');
+                    }
                 })
                 .finally(() => setLoading(false));
         }
