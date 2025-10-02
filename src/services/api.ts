@@ -2,8 +2,8 @@ import axios from 'axios';
 import { checkTokenExpiration } from '../utils/auth';
 
 const api = axios.create({
-    //baseURL: 'https://backenvillagolbackend.fly.dev/api', // URL pública de Fly.io
-    baseURL: 'http://localhost:5000/api', // URL pública 
+    baseURL: 'https://backenvillagolbackend.fly.dev/api', // URL pública de Fly.io
+    //baseURL: 'http://localhost:5000/api', // URL pública 
     headers: {
         'Content-Type': 'application/json',
     },
