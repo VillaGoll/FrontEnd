@@ -178,6 +178,18 @@ const ClientReports: React.FC<ClientReportsProps> = ({ clientStats, periodFilter
               onRowsPerPageChange={handleChangeRowsPerPage}
               labelRowsPerPage="Filas por página:"
               labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+              SelectProps={{
+                    MenuProps: {
+                        anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left"
+                        },
+                        transformOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left"
+                        },
+                    }
+                }}
             />
           </TableContainer>
         </Box>
@@ -247,6 +259,18 @@ const ClientReports: React.FC<ClientReportsProps> = ({ clientStats, periodFilter
               onRowsPerPageChange={handleChangeRowsPerPage}
               labelRowsPerPage="Filas por página:"
               labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+              SelectProps={{
+                    MenuProps: {
+                        anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left"
+                        },
+                        transformOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left"
+                        },
+                    }
+                }}
             />
           </TableContainer>
         </Box>
@@ -288,6 +312,18 @@ const ClientReports: React.FC<ClientReportsProps> = ({ clientStats, periodFilter
             onRowsPerPageChange={handleChangeRowsPerPage}
             labelRowsPerPage="Filas por página:"
             labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+            SelectProps={{
+                    MenuProps: {
+                        anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left"
+                        },
+                        transformOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left"
+                        },
+                    }
+                }}
           />
         </TableContainer>
       )}
