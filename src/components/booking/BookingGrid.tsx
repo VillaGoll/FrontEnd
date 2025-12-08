@@ -48,10 +48,13 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
     }, [court?.name]);
 
     const weekStartsOn = 1; // Monday
-    const week = eachDayOfInterval({
-        start: startOfWeek(currentDate, { weekStartsOn }),
-        end: addDays(startOfWeek(currentDate, { weekStartsOn }), 6)
-    });
+    // Memoize week boundaries to avoid any stale calculations in rare re-render sequences
+    const weekStart = useMemo(() => startOfWeek(currentDate, { weekStartsOn }), [currentDate]);
+    const weekEnd = useMemo(() => addDays(weekStart, 6), [weekStart]);
+    const week = useMemo(() => eachDayOfInterval({ start: weekStart, end: weekEnd }), [weekStart, weekEnd]);
+    // Pre-format header texts to ensure consistent updates
+    const weekHeaderStart = useMemo(() => format(weekStart, 'd MMM', { locale: es }), [weekStart]);
+    const weekHeaderEnd = useMemo(() => format(weekEnd, 'd MMM yyyy', { locale: es }), [weekEnd]);
 
     const fetchBookings = useCallback(() => {
         if (courtId) {
@@ -120,11 +123,13 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
     //const currentHour = now.getHours(); // Current hour in local time
 
     const handlePreviousWeek = () => {
-        setCurrentDate(subDays(currentDate, 7));
+        // Functional update avoids any potential stale state when clicking quickly
+        setCurrentDate(prev => subDays(prev, 7));
     };
 
     const handleNextWeek = () => {
-        setCurrentDate(addDays(currentDate, 7));
+        // Functional update avoids any potential stale state when clicking quickly
+        setCurrentDate(prev => addDays(prev, 7));
     };
 
     const exportToExcel = useCallback(() => {
@@ -238,8 +243,8 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                     <ArrowBackIosNewIcon />
                 </IconButton>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="h6">
-                        Semana del {format(week[0], 'd MMM', { locale: es })} al {format(week[6], 'd MMM yyyy', { locale: es })}
+                    <Typography variant="h6" key={`${weekHeaderStart}-${weekHeaderEnd}`}>
+                        Semana del {weekHeaderStart} al {weekHeaderEnd}
                     </Typography>
                     {loading && <CircularProgress size={20} />}
                 </Box>
