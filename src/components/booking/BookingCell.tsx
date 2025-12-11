@@ -40,7 +40,7 @@ interface BookingCellProps {
 const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast, hour, courtColor, day, courtName }: BookingCellProps) => {
     const auth = useContext(AuthContext);
     const [clientName, setClientName] = useState(booking?.clientName || '');
-    const [deposit, setDeposit] = useState(booking?.deposit?.toString() || '');
+    const [deposit, setDeposit] = useState(booking?.depositNote || booking?.deposit?.toString() || '');
     const [arrived, setArrived] = useState(booking?.status === 'Llegó');
     const [isDirty, setIsDirty] = useState(false);
     const [clients, setClients] = useState<Client[]>([]);
@@ -56,7 +56,7 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
 
     useEffect(() => {
         setClientName(booking?.clientName || '');
-        setDeposit(booking?.deposit?.toString() || '');
+        setDeposit(booking?.depositNote || booking?.deposit?.toString() || '');
         setArrived(booking?.status === 'Llegó');
         setIsDirty(false);
     }, [booking]);
@@ -73,14 +73,16 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
 
         const hasChanged = (
             clientName !== booking.clientName ||
-            deposit !== booking.deposit.toString() ||
+            deposit !== (booking.depositNote || booking.deposit.toString()) ||
             arrived !== (booking.status === 'Llegó')
         );
         setIsDirty(hasChanged);
     }, [clientName, deposit, arrived, booking]);
 
     const handleSave = () => {
-        if (Number(deposit) < 0) {
+        const match = deposit.match(/-?\d+(?:[.,]\d+)?/);
+        const parsed = match ? parseFloat(match[0].replace(',', '.')) : 0;
+        if (parsed < 0) {
             toast.error('El anticipo no puede ser un número negativo');
             return;
         }
@@ -90,7 +92,8 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
         const bookingData: Omit<BookingData, '_id'> = {
             clientName,
             client: selectedClient?._id,
-            deposit: Number(deposit),
+            deposit: parsed,
+            depositNote: deposit,
             status: auth?.user?.role === 'admin' ? (arrived ? 'Llegó' : 'No llegó') : 'No llegó',
             court: courtId,
             date,
@@ -131,7 +134,7 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                     toast.success('Reserva eliminada con éxito');
                     onBookingUpdate();
                 })
-                .catch((err: any) => {
+                .catch((err: unknown) => {
                     console.error(err);
                     toast.error('Error al eliminar la reserva');
                 });
@@ -324,11 +327,10 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
             />
             <TextField
                 variant="standard"
-                placeholder="Anticipo"
-                type="number"
+                placeholder="Anticipo/Nota"
+                type="text"
                 value={deposit}
                 onChange={(e) => setDeposit(e.target.value)}
-                onWheel={(e) => (e.target as HTMLInputElement).blur()}
                 fullWidth
                 sx={{
                     '& .MuiInputBase-input::placeholder': {
@@ -350,7 +352,6 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                     }
                 }}
                 inputProps={{
-                    min: 0,
                     style: {
                         fontSize: '0.75rem',
                         fontWeight: !isPast || booking ? 'bold' : 'normal',
