@@ -70,7 +70,7 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
             }
             return;
         }
-
+        
         const originalDepositOrNote = booking.depositNote ?? booking.deposit?.toString() ?? '';
         const hasChanged = (
             clientName !== booking.clientName ||
