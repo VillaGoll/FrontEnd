@@ -32,6 +32,7 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
     const [court, setCourt] = useState<Court | null>(null);
     //const [courtColor, setCourtColor] = useState('');
     const [loading, setLoading] = useState(false);
+    const auth = useContext(AuthContext);
 
     const courtColor = useMemo(() => {
         if (!court?.name) return '';
@@ -152,7 +153,8 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                 const booking = getBookingForSlot(day, hour);
                 let cellValue = '';
                 if (booking) {
-                    cellValue = `${booking.clientName}\nAnticipo: ${booking.deposit}\nEstado: ${booking.status}`;
+                    const note = booking.depositNote ?? `${booking.deposit}`;
+                    cellValue = `${booking.clientName}\nAnticipo/Nota: ${note}\nEstado: ${booking.status}`;
                 }
                 row.push(cellValue);
             });
@@ -313,7 +315,7 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                                 // Determinar si una celda está en el pasado
                                 // Para usuarios normales: días pasados y horas pasadas del día actual
                                 // Para administradores: ninguna celda está en el pasado (pueden reservar cualquier fecha/hora)
-                                const auth = useContext(AuthContext);
+                                //const auth = useContext(AuthContext);
                                 const isAdmin = auth?.user?.role === 'admin';
                                 
                                 // Extraer la hora de la celda actual

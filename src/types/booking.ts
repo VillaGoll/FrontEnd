@@ -6,6 +6,7 @@ export interface BookingData {
     clientName: string;
     client?: string; 
     deposit: number;
+    depositNote?: string;
     status: 'Llegó' | 'No llegó';
     isPermanent?: boolean;
     permanentEndDate?: string;
