@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import clientService from '../../services/client.service';
+import ClientExportButton from './ClientExportButton';
 import {
     List,
     ListItem,
@@ -159,7 +160,10 @@ const ClientList = ({ onEdit, refresh }: Props) => {
     return (
         <Card>
             <CardContent>
-                <Typography variant="h6" gutterBottom>Clientes</Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Typography variant="h6">Clientes</Typography>
+                    <ClientExportButton />
+                </Box>
                 <List>
                     {clients.map((client) => (
                         <ListItem key={client._id}

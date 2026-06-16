@@ -78,6 +78,12 @@ const statsService = {
       responseType: 'blob'
     });
     return response.data;
+  },
+
+  // Obtener reporte anual de clientes (veces jugadas por mes)
+  getClientAnnualReport: async (): Promise<{ year: number; clients: { name: string; phone: string; months: number[]; total: number }[] }> => {
+    const { data } = await api.get('/stats/clients/annual-report');
+    return data;
   }
 };
 
