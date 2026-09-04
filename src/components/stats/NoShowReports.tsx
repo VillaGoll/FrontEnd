@@ -14,11 +14,6 @@ import {
   CircularProgress,
   IconButton,
   Collapse,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  type SelectChangeEvent
 } from '@mui/material';
 import { 
   BarChart, 
@@ -102,7 +97,7 @@ const NoShowReports: React.FC<NoShowReportsProps> = ({ periodFilter }) => {
     setExpandedRow(expandedRow === clientId ? null : clientId);
   };
 
-  const handleCourtChange = (event: SelectChangeEvent) => {
+  const handleCourtChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCourt(event.target.value);
   };
 
@@ -158,23 +153,41 @@ const NoShowReports: React.FC<NoShowReportsProps> = ({ periodFilter }) => {
           <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
             Filtrar por cancha:
           </Typography>
-          <FormControl size="small" sx={{ minWidth: 200 }}>
-            <InputLabel>Todas las canchas</InputLabel>
-            <Select
-              value={selectedCourt}
-              label="Todas las canchas"
-              onChange={handleCourtChange}
-            >
-              <MenuItem value="">
-                <em>Todas las canchas</em>
-              </MenuItem>
-              {courts.map((court) => (
-                <MenuItem key={court._id} value={court._id}>
-                  {court.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Box
+            component="select"
+            value={selectedCourt}
+            onChange={handleCourtChange}
+            sx={{
+              minWidth: 200,
+              minHeight: 40,
+              px: 1.5,
+              py: 0,
+              fontSize: '0.875rem',
+              fontFamily: 'Roboto, sans-serif',
+              color: 'rgba(0, 0, 0, 0.87)',
+              backgroundColor: 'transparent',
+              border: '1px solid rgba(0, 0, 0, 0.23)',
+              borderRadius: '4px',
+              outline: 'none',
+              cursor: 'pointer',
+              transition: 'border-color 0.2s ease',
+              '&:hover': {
+                borderColor: 'rgba(0, 0, 0, 0.87)',
+              },
+              '&:focus': {
+                borderColor: '#1976d2',
+                borderWidth: '2px',
+                px: '13px',
+              },
+            }}
+          >
+            <option value="">Todas las canchas</option>
+            {courts.map((court) => (
+              <option key={court._id} value={court._id}>
+                {court.name}
+              </option>
+            ))}
+          </Box>
         </Box>
       </Paper>
 
