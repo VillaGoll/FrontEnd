@@ -15,6 +15,7 @@ interface Client {
     name: string;
     email: string;
     phone: string;
+    clientType?: string | null;
 }
 
 interface AddOption {
@@ -273,12 +274,18 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                     if ('title' in option) {
                         return option.title;
                     }
-                    return option.name;
+                    const typeLabel = option.clientType === 'anticipo' ? ' (anticipo)' :
+                                      option.clientType === 'pide_anticipo' ? ' (pide anticipo)' :
+                                      option.clientType === 'no_cancha' ? ' (no se le da cancha)' : '';
+                    return option.name + typeLabel;
                 }}
                 renderOption={(props, option) => {
-                  // Usar el ID como key para clientes, o el título para opciones de "Agregar"
                   const key = 'title' in option ? option.title : option._id;
-                  return <li {...props} key={key}>{'title' in option ? option.title : option.name}</li>;
+                  const typeLabel = 'clientType' in option ?
+                      (option.clientType === 'anticipo' ? ' (anticipo)' :
+                       option.clientType === 'pide_anticipo' ? ' (pide anticipo)' :
+                       option.clientType === 'no_cancha' ? ' (no se le da cancha)' : '') : '';
+                  return <li {...props} key={key}>{'title' in option ? option.title : option.name + typeLabel}</li>;
                 }}
                 sx={{
                     width: { xs: '100%', sm: 150 },
@@ -326,6 +333,27 @@ const BookingCell = ({ booking, courtId, date, timeSlot, onBookingUpdate, isPast
                     />
                 )}
             />
+            {selectedClient?.clientType && (
+                <Chip
+                    label={
+                        selectedClient.clientType === 'anticipo' ? 'Anticipo' :
+                        selectedClient.clientType === 'pide_anticipo' ? 'Pide anticipo' :
+                        'No se le da cancha'
+                    }
+                    size="small"
+                    color={
+                        selectedClient.clientType === 'anticipo' ? 'primary' :
+                        selectedClient.clientType === 'pide_anticipo' ? 'warning' :
+                        'error'
+                    }
+                    sx={{
+                        height: 16,
+                        fontSize: '0.6rem',
+                        mb: 0.5,
+                        '& .MuiChip-label': { padding: '0 4px' }
+                    }}
+                />
+            )}
             <TextField
                 variant="standard"
                 placeholder="Anticipo/Nota"

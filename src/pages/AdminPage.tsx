@@ -7,8 +7,9 @@ import ClientList from '../components/admin/ClientList';
 import ClientForm from '../components/admin/ClientForm';
 import LogPage from './LogPage';
 import StatsPage from './StatsPage';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Tab, Tabs, Fade } from '@mui/material';
+import { useLoading } from '../context/LoadingContext';
 
 interface Court {
     _id: string;
@@ -22,6 +23,7 @@ const AdminPage = () => {
     const [selectedClient, setSelectedClient] = useState<any | null>(null);
     const [refresh, setRefresh] = useState(false);
     const [tab, setTab] = useState(0);
+    const { showLoading, hideLoading } = useLoading();
 
     const handleEditCourt = (court: Court) => {
         setSelectedCourt(court);
@@ -42,9 +44,14 @@ const AdminPage = () => {
         setRefresh(prev => !prev);
     };
 
-    const handleChangeTab = (_event: React.SyntheticEvent, newValue: number) => {
+    const handleChangeTab = useCallback((_event: React.SyntheticEvent, newValue: number) => {
+        showLoading();
         setTab(newValue);
-    };
+        // Brief loading flash for tab switch
+        setTimeout(() => {
+            hideLoading();
+        }, 400);
+    }, [showLoading, hideLoading]);
 
     return (
         <Container>

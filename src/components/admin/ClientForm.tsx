@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { TextField, Button, Box, Typography, Card, CardContent } from '@mui/material';
+import { TextField, Button, Box, Typography, Card, CardContent, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import clientService from '../../services/client.service';
 
 interface Client {
     _id: string;
     name: string;
     phone: string;
+    clientType?: string | null;
 }
 
 interface ClientFormProps {
@@ -18,21 +19,23 @@ const ClientForm = ({ client, onSuccess }: ClientFormProps) => {
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
+    const [clientType, setClientType] = useState<string | null>(null);
 
     useEffect(() => {
         if (client) {
             setName(client.name);
-
             setPhone(client.phone);
+            setClientType(client.clientType || null);
         } else {
             setName('');
             setPhone('');
+            setClientType(null);
         }
     }, [client]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const clientData = { name, phone };
+        const clientData = { name, phone, clientType };
         setLoading(true);
         if (client) {
             clientService.updateClient(client._id, clientData)
@@ -63,6 +66,7 @@ const ClientForm = ({ client, onSuccess }: ClientFormProps) => {
                     onSuccess();
                     setName('');
                     setPhone('');
+                    setClientType(null);
                 })
                 .catch(err => {
                     if (typeof err === 'string' && err.toLowerCase().includes('duplicado')) {
@@ -107,6 +111,27 @@ const ClientForm = ({ client, onSuccess }: ClientFormProps) => {
                         margin="normal"
                         autoComplete="off"
                     />
+                    <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
+                        Tipo de cliente
+                    </Typography>
+                    <ToggleButtonGroup
+                        value={clientType}
+                        exclusive
+                        onChange={(_event, newValue) => setClientType(newValue)}
+                        fullWidth
+                        size="small"
+                        color="primary"
+                    >
+                        <ToggleButton value="anticipo">
+                            Paga anticipo
+                        </ToggleButton>
+                        <ToggleButton value="pide_anticipo">
+                            Se le pide anticipo
+                        </ToggleButton>
+                        <ToggleButton value="no_cancha">
+                            No se le da cancha
+                        </ToggleButton>
+                    </ToggleButtonGroup>
                     <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ mt: 2 }}>
                         Guardar
                     </Button>

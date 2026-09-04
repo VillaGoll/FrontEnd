@@ -7,18 +7,22 @@ import HomePage from './pages/HomePage';
 import AdminPage from './pages/AdminPage';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import GlobalSpinner from './components/layout/GlobalSpinner';
 
 import { AuthProvider } from './context/AuthContext';
+import { LoadingProvider } from './context/LoadingContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export function App() {
     return (
-        <AuthProvider>
-            <Router>
-                <ToastContainer />
-                <CssBaseline />
-                <Routes>
+        <LoadingProvider>
+            <AuthProvider>
+                <Router>
+                    <ToastContainer />
+                    <CssBaseline />
+                    <GlobalSpinner />
+                    <Routes>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route element={<ProtectedRoute />}>
@@ -31,6 +35,7 @@ export function App() {
                 </Routes>
             </Router>
         </AuthProvider>
+        </LoadingProvider>
     );
 }
 
