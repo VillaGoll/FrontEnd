@@ -30,6 +30,7 @@ interface Client {
     _id: string;
     name: string;
     phone: string;
+    clientType?: string | null;
 }
 
 interface ClientStatsResponse {
@@ -182,7 +183,27 @@ const ClientList = ({ onEdit, refresh }: Props) => {
                             }
                         >
                             <ListItemText
-                                primary={client.name}
+                                primary={
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        {client.name}
+                                        {client.clientType && (
+                                            <Chip
+                                                label={
+                                                    client.clientType === 'anticipo' ? 'Paga anticipo' :
+                                                    client.clientType === 'pide_anticipo' ? 'Se le pide anticipo' :
+                                                    'No se le da cancha'
+                                                }
+                                                size="small"
+                                                color={
+                                                    client.clientType === 'anticipo' ? 'primary' :
+                                                    client.clientType === 'pide_anticipo' ? 'warning' :
+                                                    'error'
+                                                }
+                                                sx={{ height: 20, fontSize: '0.7rem' }}
+                                            />
+                                        )}
+                                    </Box>
+                                }
                                 secondary={`Tel: ${client.phone || 'Sin teléfono'}`}
                             />
                         </ListItem>

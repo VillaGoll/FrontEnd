@@ -33,6 +33,23 @@ export interface FinancialStats {
   }[];
 }
 
+export interface NoShowDetail {
+  date: string;
+  timeSlot: string;
+  courtName: string;
+  deposit: number;
+}
+
+export interface NoShowClient {
+  _id: string;
+  name: string;
+  phone: string;
+  totalBookings: number;
+  noShowCount: number;
+  noShowRate: number;
+  noShowDetails: NoShowDetail[];
+}
+
 const statsService = {
   // Obtener estadísticas de clientes
   getClientStats: async (filter: PeriodFilter): Promise<ClientStats[]> => {
@@ -84,6 +101,29 @@ const statsService = {
   getClientAnnualReport: async (): Promise<{ year: number; clients: { name: string; phone: string; months: number[]; total: number }[] }> => {
     const { data } = await api.get('/stats/clients/annual-report');
     return data;
+  },
+
+  // Obtener estadísticas de no-shows
+  getNoShowStats: async (filter: PeriodFilter, courtId?: string): Promise<NoShowClient[]> => {
+    const params: Record<string, string> = { type: filter.type };
+    if (filter.startDate) params.startDate = filter.startDate.toISOString();
+    if (filter.endDate) params.endDate = filter.endDate.toISOString();
+    if (courtId) params.courtId = courtId;
+    const { data } = await api.get('/stats/no-shows', { params });
+    return data;
+  },
+
+  // Exportar datos de no-shows a Excel
+  exportNoShowsToExcel: async (filter: PeriodFilter, courtId?: string): Promise<Blob> => {
+    const params: Record<string, string> = { type: filter.type };
+    if (filter.startDate) params.startDate = filter.startDate.toISOString();
+    if (filter.endDate) params.endDate = filter.endDate.toISOString();
+    if (courtId) params.courtId = courtId;
+    const response = await api.get('/stats/no-shows/export', { 
+      params,
+      responseType: 'blob'
+    });
+    return response.data;
   }
 };
 

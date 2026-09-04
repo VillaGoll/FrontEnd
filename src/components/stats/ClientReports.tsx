@@ -128,18 +128,18 @@ const ClientReports: React.FC<ClientReportsProps> = ({ clientStats, periodFilter
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={topBookingsData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 90 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="name" 
                     angle={-45} 
                     textAnchor="end"
-                    height={70}
+                    height={80}
                   />
                   <YAxis />
                   <Tooltip />
-                  <Legend />
+                  <Legend verticalAlign="top" height={36} />
                   <Bar dataKey="reservas" name="Cantidad de Reservas" fill="#8884d8" />
                 </BarChart>
               </ResponsiveContainer>
@@ -205,18 +205,18 @@ const ClientReports: React.FC<ClientReportsProps> = ({ clientStats, periodFilter
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={topAttendanceData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 90 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="name" 
                     angle={-45} 
                     textAnchor="end"
-                    height={70}
+                    height={80}
                   />
                   <YAxis unit="%" />
                   <Tooltip formatter={(value) => [`${value}%`, 'Tasa de Asistencia']} />
-                  <Legend />
+                  <Legend verticalAlign="top" height={36} />
                   <Bar dataKey="asistencia" name="Tasa de Asistencia (%)" fill="#82ca9d" />
                 </BarChart>
               </ResponsiveContainer>

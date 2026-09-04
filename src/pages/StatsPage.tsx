@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Paper, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Paper, CircularProgress, Alert, Tabs, Tab } from '@mui/material';
 import statsService, { type PeriodFilter, type ClientStats } from '../services/stats.service';
 import PeriodFilterComponent from '../components/stats/PeriodFilterComponent';
 import ClientReports from '../components/stats/ClientReports';
+import NoShowReports from '../components/stats/NoShowReports';
 
 const StatsPage: React.FC = () => {
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>({ type: 'month' });
   const [clientStats, setClientStats] = useState<ClientStats[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [reportTab, setReportTab] = useState<number>(0);
 
   const handleFilterChange = (newFilter: PeriodFilter) => {
     setPeriodFilter(newFilter);
+  };
+
+  const handleReportTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setReportTab(newValue);
   };
 
   const fetchData = async () => {
@@ -46,6 +52,19 @@ const StatsPage: React.FC = () => {
         />
       </Paper>
 
+      <Paper sx={{ mb: 3 }}>
+        <Tabs
+          value={reportTab}
+          onChange={handleReportTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="fullWidth"
+        >
+          <Tab label="Reportes de Clientes" />
+          <Tab label="Clientes que No Llegaron" />
+        </Tabs>
+      </Paper>
+
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
           <CircularProgress />
@@ -54,10 +73,17 @@ const StatsPage: React.FC = () => {
         <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
       ) : (
         <Box sx={{ mt: 3 }}>
-          <ClientReports 
-            clientStats={clientStats} 
-            periodFilter={periodFilter} 
-          />
+          {reportTab === 0 && (
+            <ClientReports 
+              clientStats={clientStats} 
+              periodFilter={periodFilter} 
+            />
+          )}
+          {reportTab === 1 && (
+            <NoShowReports 
+              periodFilter={periodFilter} 
+            />
+          )}
         </Box>
       )}
     </Box>

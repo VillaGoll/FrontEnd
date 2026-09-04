@@ -11,6 +11,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import * as XLSX from 'xlsx';
 import AuthContext from '../../context/AuthContext';
+import { useLoading } from '../../context/LoadingContext';
 
 const hours = Array.from({ length: 18 }, (_, i) => `${String(i + 6).padStart(2, '0')}:00`);
 
@@ -33,6 +34,7 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
     //const [courtColor, setCourtColor] = useState('');
     const [loading, setLoading] = useState(false);
     const auth = useContext(AuthContext);
+    const { showLoading, hideLoading } = useLoading();
 
     const courtColor = useMemo(() => {
         if (!court?.name) return '';
@@ -60,6 +62,7 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
     const fetchBookings = useCallback(() => {
         if (courtId) {
             setLoading(true);
+            showLoading();
             // Obtener solo las reservas de la semana actual para mejorar rendimiento
             const startDate = week[0].toLocaleDateString('en-CA', { timeZone: 'America/Guatemala' });
             const endDate = week[6].toLocaleDateString('en-CA', { timeZone: 'America/Guatemala' });
@@ -73,9 +76,10 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
                 })
                 .finally(() => {
                     setLoading(false);
+                    hideLoading();
                 });
         }
-    }, [courtId, week]);
+    }, [courtId, week, showLoading, hideLoading]);
 
     useEffect(() => {
         fetchBookings();
@@ -124,13 +128,13 @@ const BookingGrid = ({ courtId }: BookingGridProps) => {
     //const currentHour = now.getHours(); // Current hour in local time
 
     const handlePreviousWeek = () => {
-        // Functional update avoids any potential stale state when clicking quickly
-        setCurrentDate(prev => subDays(prev, 7));
+        showLoading();
+        setTimeout(() => setCurrentDate(prev => subDays(prev, 7)), 0);
     };
 
     const handleNextWeek = () => {
-        // Functional update avoids any potential stale state when clicking quickly
-        setCurrentDate(prev => addDays(prev, 7));
+        showLoading();
+        setTimeout(() => setCurrentDate(prev => addDays(prev, 7)), 0);
     };
 
     const exportToExcel = useCallback(() => {

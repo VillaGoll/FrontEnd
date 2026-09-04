@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { useLoading } from '../../context/LoadingContext';
 import courtService from '../../services/court.service';
 import authService from '../../services/auth.service';
 
@@ -14,6 +15,7 @@ interface Court {
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
     const navigate = useNavigate();
+    const { showLoading } = useLoading();
     const [courts, setCourts] = useState<Court[]>([]);
     const [originalCourts, setOriginalCourts] = useState<Court[]>([]);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -103,6 +105,7 @@ const Navbar = () => {
                             component={Link} 
                             to={`/court/${court._id}`} 
                             key={court._id}
+                            onClick={() => showLoading()}
                             sx={{
                                 mx: 0.5,
                                 transition: 'all 0.3s ease',
@@ -121,6 +124,7 @@ const Navbar = () => {
                             component={Link} 
                             to={`/court/${court._id}`} 
                             key={court._id}
+                            onClick={() => showLoading()}
                             sx={{
                                 mx: 0.5,
                                 transition: 'all 0.3s ease',
@@ -233,7 +237,7 @@ const Navbar = () => {
                         onClose={handleClose}
                     >
                                                 {courts.map(court => (
-                            <MenuItem onClick={handleClose} component={Link} to={`/court/${court._id}`} key={court._id}>{court.name}</MenuItem>
+                            <MenuItem onClick={() => { handleClose(); showLoading(); }} component={Link} to={`/court/${court._id}`} key={court._id}>{court.name}</MenuItem>
                         ))}
                                                 {isAuthenticated && user?.role === 'admin' && (
                             <MenuItem onClick={handleClose} component={Link} to="/admin">Admin</MenuItem>
